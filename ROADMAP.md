@@ -1,6 +1,6 @@
 # Roadmapa MVP Fizjoluj
 
-**Status.** Etap 1 ukończony. Następny etap dotyczy kont, członkostwa i uprawnień. Kolejne etapy mają proponowany zakres, ścieżki i kryteria odbioru. Szczegółowa lista plików trafia do zatwierdzenia przed implementacją każdego etapu. Zasady pracy znajdują się w [AGENTS.md](AGENTS.md), a architektura i ryzyka w [PROJECT.md](PROJECT.md).
+**Status.** Etap 1 ukończony. Kod etapu 2 jest gotowy. Odbiór rejestracji i odzyskiwania hasła z rzeczywistą pocztą wymaga działającego środowiska Supabase. Kolejne etapy mają proponowany zakres, ścieżki i kryteria odbioru. Szczegółowa lista plików trafia do zatwierdzenia przed implementacją każdego etapu. Zasady pracy znajdują się w [AGENTS.md](AGENTS.md), a architektura i ryzyka w [PROJECT.md](PROJECT.md).
 
 ## Cel wydania
 
@@ -32,7 +32,7 @@ Git utworzy `.git/`, a Next.js wygeneruje lokalnie `next-env.d.ts` i katalog kom
 
 ## 2. Konta, członkostwo i uprawnienia
 
-**Zależność.** Etap 1 i decyzja o organizacji pilotażu oraz zasadach nadawania dostępu.
+**Przyjęty wariant.** Jedna uczelnia pilotażowa, Poznań i Szczecin oraz rocznik rozpoczęcia 2026. Student rejestruje się samodzielnie, a administrator po potwierdzeniu adresu e-mail nadaje lub odbiera dostęp do nauki. Pierwszą rolę administratora nadaje operator bazy. [Uruchomienie i konfiguracja](README.md#lokalne-konta-i-dost%C4%99p-do-nauki)
 
 - Skonfigurować Supabase Auth, sesję serwerową i wydzielone środowisko robocze. Propozycja na MVP obejmuje rejestrację i logowanie e-mailem oraz hasłem, potwierdzenie adresu, odzyskanie dostępu i wylogowanie.
 - Dodać migracje dla roli, profilu, uczelni, lokalizacji, rocznika i członkostwa. Ustalić sposób nadania pierwszej roli administratora. Przygotować panel do przydzielania zakresu dostępu oraz jego nadawania i odbierania.
@@ -130,11 +130,10 @@ Git utworzy `.git/`, a Next.js wygeneruje lokalnie `next-env.d.ts` i katalog kom
 
 | Przed etapem | Decyzja |
 | --- | --- |
-| 2 | Potwierdzenie, czy Poznań i Szczecin są lokalizacjami jednej uczelni. Wybór reguły nadawania dostępu po rejestracji, przypisania lokalizacji i rocznika oraz utworzenia pierwszego administratora. |
 | 3–4 | Potwierdzenie wspólnego katalogu i zasad publikacji oraz wycofania. Ustalenie formatów notatek i załączników, typów pytań, zapisu poprawnych odpowiedzi i tożsamości fiszek. |
 | 5 | Dostarczenie próbki JSON i ustalenie, jak rzeczywiste źródło identyfikuje materiały oraz ich aktualizacje. |
 | 6–7 | Definicja ukończenia tematu, reguły powtórek, zakres egzaminu próbnego, punktacja i informacja zwrotna. |
 | 8 | Potwierdzenie, które wydarzenia są wspólne, a które przypisywane do lokalizacji lub rocznika. |
 | 9 | Dostępność materiałów, podział środowisk, zasady przechowywania danych i sposób udostępnienia pilotażu. |
 
-Przed rozpoczęciem **etapu 2** uzgadniamy organizację pilotażu i zasady nadawania dostępu, a następnie zatwierdzamy plan implementacji. Uruchomienie kolejnych etapów następuje po odbiorze zależności i zatwierdzeniu ich planów.
+Przed rozpoczęciem **etapu 3** zatwierdzamy regułę widoczności katalogu i plan jego implementacji. Uruchomienie kolejnych etapów następuje po odbiorze zależności i zatwierdzeniu ich planów.

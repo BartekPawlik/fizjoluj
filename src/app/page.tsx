@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HomePage() {
   return (
     <main className="grid min-h-dvh place-items-center px-5 py-12 sm:px-10 sm:py-20">
@@ -9,6 +11,14 @@ export default function HomePage() {
         <p className="mt-6 max-w-sm text-lg leading-relaxed text-muted-foreground sm:text-xl">
           Platforma edukacyjna dla studentów fizjoterapii.
         </p>
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <Link href="/logowanie" className="rounded-md bg-primary px-4 py-3 font-medium text-primary-foreground hover:bg-primary/90">
+            Zaloguj się
+          </Link>
+          <Link href="/rejestracja" className="rounded-md px-2 py-3 font-medium text-primary underline underline-offset-4">
+            Załóż konto
+          </Link>
+        </div>
       </div>
     </main>
   );

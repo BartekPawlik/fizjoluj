@@ -23,7 +23,7 @@ Tylko administrator zarządza wspólnymi materiałami i kalendarzem. Każdy stud
 
 Rok studiów oznacza etap programu, rok akademicki oznacza okres jego realizacji, a rocznik określa rok rozpoczęcia studiów. Student uzyskuje dostęp w ramach członkostwa powiązanego z uczelnią, lokalizacją i rocznikiem. Model powinien umożliwić późniejsze uwzględnienie grup. Katalog, zasady jego udostępniania i przynależność studenta stanowią odrębne elementy modelu. Dzięki temu dwie lokalizacje mogą korzystać z tego samego materiału, a własne wydarzenia przypisać do odpowiedniego grona.
 
-Robocze założenie do potwierdzenia przed wdrożeniem kont to jedna uczelnia z lokalizacjami w Poznaniu i Szczecinie. Pilotaż zakłada wspólny katalog pierwszego roku oraz możliwość zawężenia wydarzeń do lokalizacji lub rocznika. Reguły nadawania dostępu i współdzielenia materiałów wymagają decyzji przed migracjami, które je egzekwują. Kolejne decyzje opisuje [roadmapa MVP](ROADMAP.md).
+W MVP Poznań i Szczecin działają jako lokalizacje jednej uczelni pilotażowej. Student sam rejestruje konto i potwierdza e-mail, a administrator przydziela dostęp do nauki dla właściwej lokalizacji i rocznika. Proponowany wspólny katalog pierwszego roku oraz zakres wydarzeń do potwierdzenia przed etapami opisuje [roadmapa MVP](ROADMAP.md).
 
 ## Architektura aplikacji
 
