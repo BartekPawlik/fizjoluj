@@ -24,7 +24,11 @@ export function readConfirmation(token: unknown, type: unknown) {
 
 export function readUuid(form: FormData, field: string) {
   const value = readString(form, field);
-  return /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i.test(value) ? value : null;
+  return isUuid(value) ? value : null;
+}
+
+export function isUuid(value: unknown): value is string {
+  return typeof value === "string" && /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i.test(value);
 }
 
 export function readPage(value: unknown) {

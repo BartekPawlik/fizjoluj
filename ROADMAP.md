@@ -1,6 +1,6 @@
 # Roadmapa MVP Fizjoluj
 
-**Status.** Etap 1 ukończony. Kod etapu 2 jest gotowy. Odbiór rejestracji i odzyskiwania hasła z rzeczywistą pocztą wymaga działającego środowiska Supabase. Kolejne etapy mają proponowany zakres, ścieżki i kryteria odbioru. Szczegółowa lista plików trafia do zatwierdzenia przed implementacją każdego etapu. Zasady pracy znajdują się w [AGENTS.md](AGENTS.md), a architektura i ryzyka w [PROJECT.md](PROJECT.md).
+**Status.** Etapy 1–3 ukończone. Kod etapu 4 i dane startowe Biologii medycznej są gotowe. Odbiór na działającym Supabase wymaga zastosowania migracji redakcji i danych, a następnie publikacji wybranego tematu do testu. Szczegółowa lista plików trafia do zatwierdzenia przed implementacją każdego etapu. Zasady pracy znajdują się w [AGENTS.md](AGENTS.md), a architektura i ryzyka w [PROJECT.md](PROJECT.md).
 
 ## Cel wydania
 
@@ -44,7 +44,7 @@ Git utworzy `.git/`, a Next.js wygeneruje lokalnie `next-env.d.ts` i katalog kom
 
 ## 3. Katalog studiów i panel przedmiotów
 
-**Zależność.** Etap 2 i uzgodniona reguła widoczności wspólnego katalogu.
+**Przyjęty wariant.** Poznań i Szczecin korzystają ze wspólnego katalogu. Na start udostępniamy 16 zatwierdzonych przedmiotów semestru 1 dla rocznika 2026. W aplikacji rok akademicki rozpoczyna się 1 października w strefie `Europe/Warsaw`. Administrator włącza widoczność semestru dla wybranego rocznika. Po rozpoczęciu kolejnego roku wcześniejsze włączone semestry są nadal dostępne.
 
 - Zdefiniować hierarchię roku studiów, semestru, przedmiotu, działu i tematu. Zapisać kolejność i stabilne identyfikatory oraz zakres udostępnienia programu na rok akademicki.
 - Udostępnić administratorowi tworzenie i aktualizację struktury, w tym ustawienie dostępności semestru. Przygotować odczyt katalogu z kontrolą widoczności całej ścieżki. Treść tematu stanie się dostępna po publikacji w etapie 4.
@@ -53,6 +53,8 @@ Git utworzy `.git/`, a Next.js wygeneruje lokalnie `next-env.d.ts` i katalog kom
 **Planowane ścieżki.** `src/features/catalog/`, `src/app/(student)/`, `src/app/(admin)/admin/`, `supabase/migrations/`, `supabase/tests/`.
 
 **Kryteria odbioru.** Administrator zapisuje pełną hierarchię, a student widzi pozycje udostępnione jego członkostwu. Konfiguracja 2026/2027 udostępnia wyłącznie pierwszy rok. Bezpośredni odczyt ukrytej pozycji kończy się odmową. Można dodać kolejny semestr przez dane i konfigurację dostępności.
+
+**Odbiór środowiska.** Zastosuj [migrację katalogu](supabase/migrations/20261120000100_study_catalog.sql) w testowym Supabase po migracji kont. Następnie otwórz `/admin/katalog` i sprawdź `/panel` ze studenckim kontem rocznika 2026. Wyłączenie semestru lub cofnięcie członkostwa powinno zabrać dostęp do jego przedmiotów także po odświeżeniu bezpośredniego linku.
 
 ## 4. Redakcja, podgląd i publikacja
 
@@ -65,6 +67,10 @@ Git utworzy `.git/`, a Next.js wygeneruje lokalnie `next-env.d.ts` i katalog kom
 **Planowane ścieżki.** `src/features/editorial/`, `src/features/catalog/`, trasy w `src/app/(admin)/admin/` i `src/app/(student)/`, `supabase/migrations/`, `supabase/tests/`.
 
 **Kryteria odbioru.** Administrator zapisuje i sprawdza szkic, po czym publikuje materiał. Studenci widzą dotychczasową wersję w trakcie edycji oraz pełną nową wersję po publikacji. Próba odczytu szkicu lub jego pliku przez studenta kończy się odmową. Niepowodzenie publikacji zachowuje poprzedni stan.
+
+**Materiał startowy.** Biologia medyczna ma pięć działów i 47 tematów. Każdy szkic zawiera notatki, jedną fiszkę i jedno pytanie jednokrotnego wyboru z czterema odpowiedziami. Ilustracje i PDF można dodać jako załączniki po otrzymaniu folderu `assets` ze źródłowej strony. Kolejne wersje tematu dziedziczą fiszki i ich identyfikatory. Wycofanie publikacji zachowuje ją jako wersję archiwalną.
+
+**Odbiór środowiska.** Zastosuj kolejno [migrację redakcji](supabase/migrations/20261120000200_topic_editorial.sql) i [migrację szkiców Biologii medycznej](supabase/migrations/20261120000300_biology_drafts.sql). W `/admin/katalog` wybierz Biologię medyczną i zweryfikuj 47 szkiców. Podejrzyj i opublikuj wybrany temat, a następnie odszukaj go na koncie studenta z aktywnym dostępem.
 
 ## 5. Import materiałów z JSON
 

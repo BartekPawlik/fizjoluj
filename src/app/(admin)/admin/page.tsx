@@ -26,7 +26,10 @@ export default async function AdminPage({ searchParams }: {
 
   return (
     <main className="mx-auto grid max-w-5xl gap-5 px-4 py-8 sm:px-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Dostęp studentów</h1>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="text-3xl font-semibold tracking-tight">Dostęp studentów</h1>
+        <Link href="/admin/katalog" className={linkClass}>Katalog studiów</Link>
+      </div>
       <Notice content={readNotice(query.status, messages)} />
       {!access ? (
         <Notice content={{ text: "Nie udało się pobrać listy studentów. Odśwież stronę.", error: true }} />

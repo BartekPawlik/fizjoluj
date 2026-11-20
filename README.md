@@ -36,7 +36,7 @@ returning user_id;
 
 Po zalogowaniu administrator ma dostęp do `/admin`. W pilotażu student sam zakłada konto i potwierdza adres. Administrator przypisuje mu Poznań albo Szczecin i rocznik 2026. W `/panel` student widzi stan przydziału. Żeby sprawdzić cofnięcie dostępu, cofnij go z drugiej sesji i odśwież panel zalogowanego studenta.
 
-W hostowanym projekcie Supabase zastosuj migrację, ustaw Site URL na adres aplikacji, włącz rejestrację i potwierdzanie e-maila oraz ustaw minimum 12 znaków dla hasła. Przenieś szablony **Confirm signup** i **Reset password** z katalogu [supabase/templates](supabase/templates). Na wysyłkę poza lokalną skrzynką skonfiguruj dostawcę SMTP. Użyj publicznego klucza w konfiguracji aplikacji. [Szablony wiadomości](https://supabase.com/docs/guides/auth/auth-email-templates) · [Konfiguracja SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
+W hostowanym projekcie Supabase zastosuj migrację, ustaw Site URL na adres aplikacji, włącz rejestrację i potwierdzanie e-maila oraz ustaw minimum 12 znaków dla hasła. W nowym projekcie Free najpierw skonfiguruj własny SMTP, aby odblokować edycję szablonów. Następnie wklej treści **Confirm sign up** i **Reset password** z katalogu [supabase/templates](supabase/templates). Użyj publicznego klucza w konfiguracji aplikacji. [Ograniczenie edycji szablonów na Free](https://github.com/orgs/supabase/discussions/46599) · [Konfiguracja SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
 
 ## Sprawdzenia
 
