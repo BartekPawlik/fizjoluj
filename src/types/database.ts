@@ -61,6 +61,17 @@ export type StudyAssessmentDate = {
   scheduled_on: string;
 };
 
+export type StudyFlashcardRating = "known" | "review";
+
+export type StudyFlashcardProgress = {
+  student_id: string;
+  topic_id: string;
+  flashcard_id: string;
+  rating: StudyFlashcardRating;
+  edit_version: number;
+  reviewed_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -111,6 +122,7 @@ export type Database = {
       study_assessments: ReadTable<StudyAssessment>;
       study_assessment_topics: ReadTable<{ assessment_id: string; topic_id: string }>;
       study_assessment_dates: ReadTable<StudyAssessmentDate>;
+      study_flashcard_progress: ReadTable<StudyFlashcardProgress>;
     };
     Views: Record<never, never>;
     Functions: {
@@ -183,8 +195,19 @@ export type Database = {
         Args: { target_subject_id: string; target_assessment_id: string; expected_version: number };
         Returns: undefined;
       };
+      rate_study_flashcard: {
+        Args: {
+          target_assessment_id: string | null;
+          target_topic_id: string;
+          target_revision_id: string;
+          target_flashcard_id: string;
+          target_rating: StudyFlashcardRating;
+          expected_version: number;
+        };
+        Returns: number;
+      };
     };
-    Enums: { app_role: AppRole; study_revision_state: StudyRevisionState };
+    Enums: { app_role: AppRole; study_revision_state: StudyRevisionState; study_flashcard_rating: StudyFlashcardRating };
     CompositeTypes: Record<never, never>;
   };
 };

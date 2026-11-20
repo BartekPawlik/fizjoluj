@@ -1,12 +1,13 @@
 import type { readSubjectCatalog } from "@/features/catalog/queries";
 import { TopicContent } from "@/features/editorial/topic-content";
+import { TopicFlashcardsLink } from "@/features/learning/flashcard-deck";
 
 type SubjectSections = Extract<Awaited<ReturnType<typeof readSubjectCatalog>>, { status: "ready" }>["sections"];
 
 const summaryClass = "cursor-pointer list-none rounded-xl px-4 py-3 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden";
 const chevronClass = "size-2 shrink-0 -rotate-45 border-r-2 border-b-2 border-primary";
 
-export function SubjectMaterials({ sections }: { sections: SubjectSections }) {
+export function SubjectMaterials({ sections, flashcardSubjectId }: { sections: SubjectSections; flashcardSubjectId?: string }) {
   const publishedSections = sections.filter(({ topics }) => topics.length > 0);
 
   return (
@@ -38,7 +39,8 @@ export function SubjectMaterials({ sections }: { sections: SubjectSections }) {
                           <span aria-hidden="true" className={`${chevronClass} group-open/topic:rotate-45`} />
                         </h4>
                       </summary>
-                      <div className="px-3 pb-4 sm:px-6">
+                      <div className="grid gap-3 px-3 pb-4 sm:px-6">
+                        {flashcardSubjectId && <TopicFlashcardsLink subjectId={flashcardSubjectId} topicId={topic.id} />}
                         <TopicContent material={topic.material} assets={topic.assets} heading="h5" />
                       </div>
                     </details>

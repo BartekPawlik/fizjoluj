@@ -81,7 +81,7 @@ export async function readSubjectAssessments(subjectId: string, assessmentId?: s
   } as const;
 }
 
-export async function readStudentAssessment(subjectId: string, assessmentId: string) {
+export async function readStudentAssessmentScope(subjectId: string, assessmentId: string) {
   const overview = await readSubjectAssessments(subjectId, assessmentId);
   if (overview.status !== "ready") return overview;
   const assessment = overview.assessments[0];
@@ -90,7 +90,13 @@ export async function readStudentAssessment(subjectId: string, assessmentId: str
   const { supabase } = await requireProfile();
   const scope = await supabase.from("study_assessment_topics").select("topic_id").eq("assessment_id", assessment.id);
   if (scope.error) return { status: "failed" } as const;
-  const catalog = await readSubjectCatalog(subjectId, scope.data.map(({ topic_id }) => topic_id));
+  return { status: "ready", assessment, topicIds: scope.data.map(({ topic_id }) => topic_id) } as const;
+}
+
+export async function readStudentAssessment(subjectId: string, assessmentId: string) {
+  const scope = await readStudentAssessmentScope(subjectId, assessmentId);
+  if (scope.status !== "ready") return scope;
+  const catalog = await readSubjectCatalog(subjectId, scope.topicIds);
   if (catalog.status !== "ready") return catalog;
-  return { ...catalog, assessment } as const;
+  return { ...catalog, assessment: scope.assessment } as const;
 }

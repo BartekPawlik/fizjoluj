@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { SubjectTabs } from "@/features/assessments/student-assessments";
+import { requireProfile } from "@/features/auth/session";
 import { Notice } from "@/features/auth/ui";
 import { isUuid } from "@/features/auth/validation";
 import { readSubjectCatalog } from "@/features/catalog/queries";
@@ -11,7 +12,7 @@ import { SubjectMaterials } from "@/features/catalog/subject-materials";
 export default async function SubjectPage({ params }: { params: Promise<{ subjectId: string }> }) {
   const { subjectId } = await params;
   if (!isUuid(subjectId)) notFound();
-  const result = await readSubjectCatalog(subjectId);
+  const [result, { profile }] = await Promise.all([readSubjectCatalog(subjectId), requireProfile()]);
   if (result.status === "missing") notFound();
 
   return (
@@ -28,7 +29,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ subjec
         <>
           <StudentPageIntro title={result.subject.name} />
           <SubjectTabs subjectId={subjectId} current="topics" />
-          <SubjectMaterials sections={result.sections} />
+          <SubjectMaterials sections={result.sections} flashcardSubjectId={profile?.role === "student" ? subjectId : undefined} />
         </>
       )}
     </main>

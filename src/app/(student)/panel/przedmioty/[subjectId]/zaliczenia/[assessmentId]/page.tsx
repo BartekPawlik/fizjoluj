@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 
 import { readStudentAssessment } from "@/features/assessments/queries";
 import { AssessmentDate, SubjectTabs } from "@/features/assessments/student-assessments";
-import { linkClass, Notice } from "@/features/auth/ui";
+import { requireProfile } from "@/features/auth/session";
+import { buttonClass, linkClass, Notice } from "@/features/auth/ui";
 import { isUuid } from "@/features/auth/validation";
 import { StudentPageIntro } from "@/features/catalog/student-catalog";
 import { SubjectMaterials } from "@/features/catalog/subject-materials";
@@ -13,6 +14,7 @@ export default async function StudentAssessmentPage({ params }: {
 }) {
   const { subjectId, assessmentId } = await params;
   if (!isUuid(subjectId) || !isUuid(assessmentId)) notFound();
+  const { profile } = await requireProfile();
   const result = await readStudentAssessment(subjectId, assessmentId);
   if (result.status === "missing") notFound();
 
@@ -27,7 +29,11 @@ export default async function StudentAssessmentPage({ params }: {
             <p className="text-sm text-white/85"><AssessmentDate scheduledOn={result.assessment.scheduledOn} /></p>
           </StudentPageIntro>
           <SubjectTabs subjectId={subjectId} current="assessments" />
-          <SubjectMaterials sections={result.sections} />
+          {profile?.role === "student" && (
+            <Link href={`/panel/przedmioty/${subjectId}/zaliczenia/${assessmentId}/fiszki`} prefetch={false}
+              className={`${buttonClass} w-fit`}>Fiszki</Link>
+          )}
+          <SubjectMaterials sections={result.sections} flashcardSubjectId={profile?.role === "student" ? subjectId : undefined} />
         </>
       )}
     </main>
