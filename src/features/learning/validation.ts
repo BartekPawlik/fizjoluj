@@ -4,6 +4,19 @@ import type { StudyFlashcardRating } from "@/types/database";
 
 export type FlashcardProgress = { rating: StudyFlashcardRating; version: number };
 
+const modeParams = { learn: "nauka", practice: "sprawdzanie" } as const;
+export type FlashcardMode = keyof typeof modeParams;
+
+export function readFlashcardMode(value: unknown): FlashcardMode | null {
+  if (value === modeParams.learn) return "learn";
+  if (value === modeParams.practice) return "practice";
+  return null;
+}
+
+export function flashcardModeHref(href: string, mode: FlashcardMode) {
+  return `${href}?tryb=${modeParams[mode]}`;
+}
+
 export type SessionFlashcard = StudyFlashcard & {
   topicId: string;
   topicName: string;

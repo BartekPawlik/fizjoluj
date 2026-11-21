@@ -55,15 +55,18 @@ export async function readAssessmentFlashcards(subjectId: string, assessmentId: 
   return { status: "ready", assessment: scope.assessment, cards } as const;
 }
 
-export async function readTopicFlashcards(subjectId: string, topicId: string) {
+export async function readSectionFlashcards(subjectId: string, sectionId: string) {
   const { profile, supabase, user } = await requireProfile();
   if (profile?.role !== "student" || !profile.email_confirmed_at) return { status: "missing" } as const;
-  const sections = await readSubjectTopicGroups(supabase, subjectId, [topicId]);
-  if (!sections) return { status: "failed" } as const;
-  const topic = sections.flatMap((section) => section.topics)[0];
-  if (!topic) return { status: "missing" } as const;
+  const section = await supabase.from("study_sections").select("id, name")
+    .eq("subject_id", subjectId).eq("id", sectionId).maybeSingle();
+  if (section.error) return { status: "failed" } as const;
+  if (!section.data) return { status: "missing" } as const;
 
-  const cards = await readFlashcardsForTopics(supabase, user.id, [topic]);
+  const topics = await supabase.from("study_topics").select("id, name")
+    .eq("section_id", section.data.id).order("position").order("name");
+  if (topics.error) return { status: "failed" } as const;
+  const cards = await readFlashcardsForTopics(supabase, user.id, topics.data);
   if (!cards) return { status: "failed" } as const;
-  return { status: "ready", topic, cards } as const;
+  return { status: "ready", section: section.data, cards } as const;
 }

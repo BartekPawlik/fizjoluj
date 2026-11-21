@@ -3,22 +3,33 @@ import Link from "next/link";
 import { buttonClass, linkClass, Notice } from "@/features/auth/ui";
 import { StudentPageIntro } from "@/features/catalog/student-catalog";
 import { FlashcardSession } from "@/features/learning/flashcard-session";
-import type { SessionFlashcard } from "@/features/learning/validation";
+import { flashcardModeHref, type FlashcardMode, type SessionFlashcard } from "@/features/learning/validation";
 
-export function TopicFlashcardsLink({ subjectId, topicId }: { subjectId: string; topicId: string }) {
+export function sectionFlashcardsHref(subjectId: string, sectionId: string) {
+  return `/panel/przedmioty/${subjectId}/dzialy/${sectionId}/fiszki`;
+}
+
+export function FlashcardModeLinks({ href }: { href: string }) {
   return (
-    <Link href={`/panel/przedmioty/${subjectId}/tematy/${topicId}/fiszki`} prefetch={false} className={`${buttonClass} w-fit`}>
-      Fiszki tematu
-    </Link>
+    <div role="group" aria-label="Tryby fiszek" className="flex flex-wrap gap-2">
+      <Link href={flashcardModeHref(href, "learn")} prefetch={false} className={buttonClass}>
+        Fiszki do nauki
+      </Link>
+      <Link href={flashcardModeHref(href, "practice")} prefetch={false}
+        className="inline-flex min-h-11 items-center justify-center rounded-md border bg-card px-4 py-2 font-medium text-primary hover:bg-secondary">
+        Sprawdź się
+      </Link>
+    </div>
   );
 }
 
-export function FlashcardDeck({ assessmentId, backHref, backLabel, subtitle, cards }: {
+export function FlashcardDeck({ assessmentId, backHref, backLabel, subtitle, cards, mode = null }: {
   assessmentId: string | null;
   backHref: string;
   backLabel: string;
   subtitle?: string;
   cards: SessionFlashcard[] | null;
+  mode?: FlashcardMode | null;
 }) {
   return (
     <main className="mx-auto grid max-w-5xl gap-5 px-4 py-6 sm:gap-7 sm:px-6 sm:py-10">
@@ -29,10 +40,10 @@ export function FlashcardDeck({ assessmentId, backHref, backLabel, subtitle, car
       {cards === null ? (
         <Notice content={{ text: "Nie udało się pobrać fiszek. Odśwież stronę.", error: true }} />
       ) : cards.length > 0 ? (
-        <FlashcardSession assessmentId={assessmentId} cards={cards} />
+        <FlashcardSession key={mode ?? "choose"} assessmentId={assessmentId} cards={cards} initialMode={mode} />
       ) : (
         <p className="rounded-2xl border bg-card p-5 text-muted-foreground">
-          {assessmentId ? "W tym zaliczeniu nie ma jeszcze opublikowanych fiszek." : "W tym temacie nie ma jeszcze opublikowanych fiszek."}
+          {assessmentId ? "W tym zaliczeniu nie ma jeszcze opublikowanych fiszek." : "W tym zagadnieniu nie ma jeszcze opublikowanych fiszek."}
         </p>
       )}
     </main>

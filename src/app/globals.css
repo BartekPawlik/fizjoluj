@@ -57,3 +57,26 @@
     @apply bg-background font-sans text-foreground antialiased;
   }
 }
+
+@keyframes flashcard-slide-in {
+  from {
+    transform: translateX(var(--flashcard-slide-offset));
+    opacity: 0.55;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-flashcard-slide] {
+    --flashcard-slide-offset: 2.75rem;
+    animation: flashcard-slide-in 220ms cubic-bezier(0.2, 0.7, 0.25, 1) both;
+  }
+
+  [data-flashcard-slide="previous"] {
+    --flashcard-slide-offset: -2.75rem;
+  }
+}

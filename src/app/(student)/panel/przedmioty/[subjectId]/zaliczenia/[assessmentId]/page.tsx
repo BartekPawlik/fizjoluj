@@ -4,10 +4,11 @@ import { notFound } from "next/navigation";
 import { readStudentAssessment } from "@/features/assessments/queries";
 import { AssessmentDate, SubjectTabs } from "@/features/assessments/student-assessments";
 import { requireProfile } from "@/features/auth/session";
-import { buttonClass, linkClass, Notice } from "@/features/auth/ui";
+import { linkClass, Notice } from "@/features/auth/ui";
 import { isUuid } from "@/features/auth/validation";
 import { StudentPageIntro } from "@/features/catalog/student-catalog";
 import { SubjectMaterials } from "@/features/catalog/subject-materials";
+import { FlashcardModeLinks } from "@/features/learning/flashcard-deck";
 
 export default async function StudentAssessmentPage({ params }: {
   params: Promise<{ subjectId: string; assessmentId: string }>;
@@ -30,10 +31,9 @@ export default async function StudentAssessmentPage({ params }: {
           </StudentPageIntro>
           <SubjectTabs subjectId={subjectId} current="assessments" />
           {profile?.role === "student" && (
-            <Link href={`/panel/przedmioty/${subjectId}/zaliczenia/${assessmentId}/fiszki`} prefetch={false}
-              className={`${buttonClass} w-fit`}>Fiszki</Link>
+            <FlashcardModeLinks href={`/panel/przedmioty/${subjectId}/zaliczenia/${assessmentId}/fiszki`} />
           )}
-          <SubjectMaterials sections={result.sections} flashcardSubjectId={profile?.role === "student" ? subjectId : undefined} />
+          <SubjectMaterials sections={result.sections} />
         </>
       )}
     </main>

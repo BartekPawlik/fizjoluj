@@ -1,6 +1,6 @@
 import type { readSubjectCatalog } from "@/features/catalog/queries";
 import { TopicContent } from "@/features/editorial/topic-content";
-import { TopicFlashcardsLink } from "@/features/learning/flashcard-deck";
+import { FlashcardModeLinks, sectionFlashcardsHref } from "@/features/learning/flashcard-deck";
 
 type SubjectSections = Extract<Awaited<ReturnType<typeof readSubjectCatalog>>, { status: "ready" }>["sections"];
 
@@ -29,6 +29,11 @@ export function SubjectMaterials({ sections, flashcardSubjectId }: { sections: S
                   <span aria-hidden="true" className={`${chevronClass} group-open/section:rotate-45`} />
                 </h3>
               </summary>
+              {flashcardSubjectId && (
+                <div className="border-t px-4 py-3 sm:px-6">
+                  <FlashcardModeLinks href={sectionFlashcardsHref(flashcardSubjectId, section.id)} />
+                </div>
+              )}
               <ul className="divide-y divide-border border-t">
                 {section.topics.map((topic) => (
                   <li key={topic.id}>
@@ -39,8 +44,7 @@ export function SubjectMaterials({ sections, flashcardSubjectId }: { sections: S
                           <span aria-hidden="true" className={`${chevronClass} group-open/topic:rotate-45`} />
                         </h4>
                       </summary>
-                      <div className="grid gap-3 px-3 pb-4 sm:px-6">
-                        {flashcardSubjectId && <TopicFlashcardsLink subjectId={flashcardSubjectId} topicId={topic.id} />}
+                      <div className="px-3 pb-4 sm:px-6">
                         <TopicContent material={topic.material} assets={topic.assets} heading="h5" />
                       </div>
                     </details>

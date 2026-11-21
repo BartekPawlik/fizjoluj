@@ -3,11 +3,16 @@
 import { useEffect, useRef, useState, useTransition, type PointerEvent } from "react";
 
 import { rateFlashcard } from "@/features/learning/actions";
-import { flashcardKey, type SessionFlashcard } from "@/features/learning/validation";
+import { flashcardKey, type FlashcardMode, type SessionFlashcard } from "@/features/learning/validation";
 import type { StudyFlashcardRating } from "@/types/database";
 
-type StudyMode = "learn" | "practice";
-type Session = { mode: StudyMode; queue: SessionFlashcard[]; position: number; ratings: Map<string, StudyFlashcardRating> };
+type Session = {
+  mode: FlashcardMode;
+  queue: SessionFlashcard[];
+  position: number;
+  ratings: Map<string, StudyFlashcardRating>;
+  slide?: "next" | "previous";
+};
 type RatingError = { text: string; refresh?: boolean };
 type TouchStart = { id: number; x: number; y: number; time: number };
 
@@ -16,8 +21,14 @@ const primary = `min-h-11 rounded-lg bg-primary px-4 py-2 font-semibold text-pri
 const secondary = `min-h-11 rounded-lg border bg-card px-4 py-2 font-semibold text-primary hover:bg-secondary disabled:opacity-55 ${focusClass}`;
 const modeButton = `grid gap-2 rounded-2xl border bg-card p-5 text-left shadow-xs hover:border-primary/50 hover:bg-secondary/40 sm:p-6 ${focusClass}`;
 
-export function FlashcardSession({ assessmentId, cards }: { assessmentId: string | null; cards: SessionFlashcard[] }) {
-  const [session, setSession] = useState<Session | null>(null);
+export function FlashcardSession({ assessmentId, cards, initialMode }: {
+  assessmentId: string | null;
+  cards: SessionFlashcard[];
+  initialMode: FlashcardMode | null;
+}) {
+  const [session, setSession] = useState<Session | null>(() => (
+    initialMode ? { mode: initialMode, queue: cards, position: 0, ratings: new Map() } : null
+  ));
   const [revealed, setRevealed] = useState(false);
   const [error, setError] = useState<RatingError | null>(null);
   const [pending, startTransition] = useTransition();
@@ -35,7 +46,7 @@ export function FlashcardSession({ assessmentId, cards }: { assessmentId: string
     heading.current?.focus();
   }, [session?.mode, session?.position]);
 
-  function start(mode: StudyMode, queue = cards) {
+  function start(mode: FlashcardMode, queue = cards) {
     move({ mode, queue, position: 0, ratings: new Map() });
   }
 
@@ -50,7 +61,7 @@ export function FlashcardSession({ assessmentId, cards }: { assessmentId: string
   function navigate(current: Session, direction: -1 | 1) {
     const position = current.position + direction;
     if (submitting.current || position < 0 || position > current.queue.length) return;
-    move({ ...current, position });
+    move({ ...current, position, slide: direction === 1 ? "next" : "previous" });
   }
 
   function beginTouch(event: PointerEvent<HTMLElement>) {
@@ -92,7 +103,7 @@ export function FlashcardSession({ assessmentId, cards }: { assessmentId: string
         });
         if (result.status === "rated") {
           setProgress((previous) => new Map(previous).set(key, { rating, version: result.version }));
-          move({ ...current, position: current.position + 1, ratings: new Map(current.ratings).set(key, rating) });
+          move({ ...current, position: current.position + 1, ratings: new Map(current.ratings).set(key, rating), slide: "next" });
         } else if (result.status === "conflict") {
           setError({ text: "Fiszka lub jej ocena się zmieniła. Odśwież zestaw przed dalszą nauką.", refresh: true });
         } else if (result.status === "forbidden") {
@@ -172,29 +183,31 @@ export function FlashcardSession({ assessmentId, cards }: { assessmentId: string
         </p>
         <button type="button" onClick={() => move(null)} disabled={pending} className={secondary}>Zmień tryb</button>
       </div>
-      <div className="grid gap-3">
-        <article aria-labelledby="flashcard-prompt" style={{ touchAction: "pan-y pinch-zoom" }} onPointerDown={beginTouch}
-          onPointerUp={(event) => finishTouch(event, session)} onPointerCancel={() => { touch.current = null; }}
-          className={`grid min-h-48 content-center gap-3 rounded-2xl border p-5 shadow-xs sm:p-8 ${revealed ? "bg-secondary" : "bg-card"}`}>
-          <p className="text-sm font-medium text-primary wrap-anywhere">{card.topicName}</p>
-          <div aria-live="polite" className="grid gap-3">
-            <h2 id="flashcard-prompt" ref={heading} tabIndex={-1} className="text-xl font-semibold wrap-anywhere focus:outline-none sm:text-2xl">
-              {revealed ? "Odpowiedź" : card.prompt}
-            </h2>
-            {(learning || revealed) && (
-              <div className={learning ? "grid gap-2 border-t pt-3" : ""}>
-                {learning && <h3 className="text-sm font-semibold text-muted-foreground">Odpowiedź</h3>}
-                <p className="leading-relaxed whitespace-pre-line wrap-anywhere">{card.answer}</p>
-              </div>
-            )}
-          </div>
-        </article>
-        {(learning || revealed) && card.memoryHint && (
-          <aside aria-labelledby="flashcard-memory-title" className="grid gap-2 rounded-2xl border bg-secondary p-4 sm:p-5">
-            <h3 id="flashcard-memory-title" className="text-sm font-semibold text-primary">Zapamiętaj przez skojarzenie</h3>
-            <p className="leading-relaxed whitespace-pre-line wrap-anywhere">{card.memoryHint}</p>
-          </aside>
-        )}
+      <div className="-mx-1 overflow-x-clip px-1">
+        <div key={session.position} data-flashcard-slide={session.slide} className="grid gap-3">
+          <article aria-labelledby="flashcard-prompt" style={{ touchAction: "pan-y pinch-zoom" }} onPointerDown={beginTouch}
+            onPointerUp={(event) => finishTouch(event, session)} onPointerCancel={() => { touch.current = null; }}
+            className={`grid min-h-48 content-center gap-3 rounded-2xl border p-5 shadow-xs sm:p-8 ${revealed ? "bg-secondary" : "bg-card"}`}>
+            <p className="text-sm font-medium text-primary wrap-anywhere">{card.topicName}</p>
+            <div aria-live="polite" className="grid gap-3">
+              <h2 id="flashcard-prompt" ref={heading} tabIndex={-1} className="text-xl font-semibold wrap-anywhere focus:outline-none sm:text-2xl">
+                {revealed ? "Odpowiedź" : card.prompt}
+              </h2>
+              {(learning || revealed) && (
+                <div className={learning ? "grid gap-2 border-t pt-3" : ""}>
+                  {learning && <h3 className="text-sm font-semibold text-muted-foreground">Odpowiedź</h3>}
+                  <p className="leading-relaxed whitespace-pre-line wrap-anywhere">{card.answer}</p>
+                </div>
+              )}
+            </div>
+          </article>
+          {(learning || revealed) && card.memoryHint && (
+            <aside aria-labelledby="flashcard-memory-title" className="grid gap-2 rounded-2xl border bg-secondary p-4 sm:p-5">
+              <h3 id="flashcard-memory-title" className="text-sm font-semibold text-primary">Zapamiętaj przez skojarzenie</h3>
+              <p className="leading-relaxed whitespace-pre-line wrap-anywhere">{card.memoryHint}</p>
+            </aside>
+          )}
+        </div>
       </div>
       <p className="hidden text-sm text-muted-foreground [@media(pointer:coarse)]:block">
         Przesuń palcem po fiszce w lewo lub w prawo, aby przejść dalej lub wstecz.
